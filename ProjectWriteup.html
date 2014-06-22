@@ -1,11 +1,11 @@
-Enter file contents here<!DOCTYPE html>
+<!DOCTYPE html>
 <!-- saved from url=(0014)about:internet -->
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta http-equiv="x-ua-compatible" content="IE=9" >
 
-<title>Introduction</title>
+<title>Project Writeup Report (by Yong Hee Park)</title>
 
 <style type="text/css">
 body, td {
@@ -179,10 +179,9 @@ hljs.initHighlightingOnLoad();
 </head>
 
 <body>
-<pre><code class="r">options(scipen=1,digits=3,width=80)
-</code></pre>
+<h1>Project Writeup Report (by Yong Hee Park)</h1>
 
-<h1>Introduction</h1>
+<h2>Introduction</h2>
 
 <p>According to paper, authors recorded sensor readings and added new values from it to the train and test data.</p>
 
@@ -307,6 +306,33 @@ pred.rf</p>
 
 <pre><code class="r">setwd(&quot;C:/RData&quot;)
 library(caret)
+set.seed(3433)
+
+orgTraining &lt;- read.csv(&quot;pml-training.csv&quot;,head=TRUE,sep=&quot;,&quot;)
+orgTesting &lt;- read.csv(&quot;pml-testing.csv&quot;,head=TRUE,sep=&quot;,&quot;)
+columnSelect &lt;- which(grepl(&quot;^yaw|^pitch|^roll|^gyros|^accel|^magnet|^classe&quot;, colnames(orgTraining), ignore.case = T))
+training &lt;- orgTraining[,columnSelect]
+testing &lt;- orgTesting[,columnSelect]
+
+trainInds &lt;- sample(nrow(training), nrow(training)/3)
+training &lt;- training[trainInds,]
+
+dim(training)
+names(training)
+
+Sys.time()
+trControl &lt;- trainControl(method = &quot;cv&quot;,10)
+training$classe &lt;- factor(training$classe)
+model.rfcv &lt;-train(classe~., data=training, method=&quot;rf&quot;, trControl=trControl)
+Sys.time()
+model.rfcv
+plot(model.rfcv)
+pred.rf &lt;- predict(model.rfcv,testing)
+pred.rf
+</code></pre>
+
+<pre><code class="r">setwd(&quot;C:/RData&quot;)
+library(caret)
 </code></pre>
 
 <pre><code>## Loading required package: lattice
@@ -355,7 +381,7 @@ dim(training)
 <pre><code class="r">Sys.time()
 </code></pre>
 
-<pre><code>## [1] &quot;2014-06-22 14:02:23 KST&quot;
+<pre><code>## [1] &quot;2014-06-22 15:23:33 KST&quot;
 </code></pre>
 
 <pre><code class="r">trControl &lt;- trainControl(method = &quot;cv&quot;,10)
@@ -371,7 +397,7 @@ model.rfcv &lt;-train(classe~., data=training, method=&quot;rf&quot;, trControl=
 <pre><code class="r">Sys.time()
 </code></pre>
 
-<pre><code>## [1] &quot;2014-06-22 14:17:38 KST&quot;
+<pre><code>## [1] &quot;2014-06-22 15:38:51 KST&quot;
 </code></pre>
 
 <pre><code class="r">model.rfcv
