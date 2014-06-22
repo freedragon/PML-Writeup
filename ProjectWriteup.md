@@ -1,11 +1,8 @@
-Enter file contents here
-```r
-options(scipen=1,digits=3,width=80)
-```
+Project Writeup Report (by Yong Hee Park)
+==========================================
 
 Introduction
-========================================================
-
+------------------------
 According to paper, authors recorded sensor readings and added new values from it to the train and test data.
 
 As described in the paper, I decided to use only meaningful predictors (not empty, NA and has no great value).
@@ -89,6 +86,36 @@ To run the code, copy the CSV files to PC disk and move to it. I copied files to
 ```r
 setwd("C:/RData")
 library(caret)
+set.seed(3433)
+
+orgTraining <- read.csv("pml-training.csv",head=TRUE,sep=",")
+orgTesting <- read.csv("pml-testing.csv",head=TRUE,sep=",")
+columnSelect <- which(grepl("^yaw|^pitch|^roll|^gyros|^accel|^magnet|^classe", colnames(orgTraining), ignore.case = T))
+training <- orgTraining[,columnSelect]
+testing <- orgTesting[,columnSelect]
+
+trainInds <- sample(nrow(training), nrow(training)/3)
+training <- training[trainInds,]
+
+dim(training)
+names(training)
+
+Sys.time()
+trControl <- trainControl(method = "cv",10)
+training$classe <- factor(training$classe)
+model.rfcv <-train(classe~., data=training, method="rf", trControl=trControl)
+Sys.time()
+model.rfcv
+plot(model.rfcv)
+pred.rf <- predict(model.rfcv,testing)
+pred.rf
+```
+
+
+
+```r
+setwd("C:/RData")
+library(caret)
 ```
 
 ```
@@ -144,7 +171,7 @@ Sys.time()
 ```
 
 ```
-## [1] "2014-06-22 14:02:23 KST"
+## [1] "2014-06-22 15:23:33 KST"
 ```
 
 ```r
@@ -164,7 +191,7 @@ Sys.time()
 ```
 
 ```
-## [1] "2014-06-22 14:17:38 KST"
+## [1] "2014-06-22 15:38:51 KST"
 ```
 
 ```r
